@@ -13,7 +13,7 @@ pub struct Configuration {
     username: String,
     password: String,
     url: String,
-    port: String,
+    port: u16,
     allowed_users: Vec<String>
 }
 
@@ -24,7 +24,7 @@ impl Default for Configuration {
             username: "".to_string(),
             password: "".to_string(),
             url: "".to_string(),
-            port: "9091".to_string(),
+            port: 9091,
             allowed_users: vec![]
         }
     }
@@ -34,7 +34,11 @@ fn main() {
     env_logger::init();
     let mut args: Configuration = Configuration::default();
     cli::arg_parse(&mut args);
-    app::run(&args);
+    let res = app::run(&args);
+    match res {
+        Err(e) => error!("{}", e),
+        _ => {}
+    }
 }
 
 

@@ -42,6 +42,10 @@ pub(crate) fn arg_parse(args: &mut Configuration){
             .help("URL for Transmission remote server")
             .takes_value(true)
             .long("url"))
+        .arg(Arg::with_name("port")
+            .help("Port for Transmission remote server")
+            .takes_value(true)
+            .long("port"))
         .arg(Arg::with_name("allowed_users")
             .help("Telegram username of user authorized to access this bot instance (defaults to no one)")
             .takes_value(true)
@@ -65,11 +69,11 @@ pub(crate) fn arg_parse(args: &mut Configuration){
         }
     );
 
-    args.bot_token = matches.value_of("bot_token").unwrap_or_else(|| toml_data.bot_token.as_str()).to_string();
-    args.username = matches.value_of("username").unwrap_or_else(|| toml_data.username.as_str()).to_string();
-    args.password = matches.value_of("password").unwrap_or_else(|| toml_data.password.as_str()).to_string();
-    args.url = matches.value_of("url").unwrap_or_else(|| toml_data.url.as_str()).to_string();
-    args.port = matches.value_of("port").unwrap_or_else(|| toml_data.port.as_str()).to_string();
+    args.bot_token = matches.value_of("bot_token").and_then(|bot_token| bot_token.parse().ok()).unwrap_or(toml_data.bot_token);
+    args.username = matches.value_of("username").and_then(|username| username.parse().ok()).unwrap_or(toml_data.username);
+    args.password = matches.value_of("password").and_then(|password| password.parse().ok()).unwrap_or(toml_data.password);
+    args.url = matches.value_of("url").and_then(|url| url.parse().ok()).unwrap_or(toml_data.url);
+    args.port = matches.value_of("port").and_then(|port| port.parse().ok()).unwrap_or(toml_data.port);
 
     // Append CLI allowed users to args struct. If none are provided in CLI args, default to an empty list.
     for username in matches.values_of("allowed_users").unwrap_or_default(){
